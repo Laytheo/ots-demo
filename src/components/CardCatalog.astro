@@ -6,11 +6,13 @@ interface Props {
   type: RootType;
   data: Record<string, any>;
   showAll?: boolean;
+  chromeless?: boolean;
 }
 
-const { type, data, showAll = false } = Astro.props;
+const { type, data, showAll = false, chromeless = false } = Astro.props;
 
-// Define which keys to show, in order, per root type. Common keys appear last.
+// Define which keys to show, in order, per root type. "type" is always
+// rendered first as a synthetic row outside this list.
 const ORDER: Record<RootType, string[]> = {
   person:  ["title", "subtype", "state", "alternate_names", "birth_date", "death_date", "nationality", "roles", "spouses", "children", "parents", "associations", "created"],
   place:   ["title", "subtype", "state", "aliases", "region", "country", "coordinates", "associations", "created"],
@@ -83,10 +85,12 @@ for (const k of order) {
   });
 }
 ---
-<div class="cardcatalog">
-  <div class="cc-header">
-    <span class="cc-dot" style={`background:${ROOT_COLOR[type]}`}></span>
-    <span>{ROOT_LABEL[type]}{data.subtype ? ` · ${String(data.subtype).replace(/\[\[|\]\]/g, "")}` : ""}</span>
+<div class:list={["cardcatalog", { "cardcatalog-chromeless": chromeless }]}>
+  <div class="cc-row">
+    <span class="cc-key">Type</span>
+    <span class="cc-val">
+      <WikiLink raw={`[[${ROOT_LABEL[type]}]]`} />
+    </span>
   </div>
   {rows.map((r) => (
     <div class="cc-row">

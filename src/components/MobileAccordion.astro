@@ -8,8 +8,8 @@ interface Props {
 
 const { label, count, open = false, class: extraClass = "" } = Astro.props;
 ---
-<details class:list={["mobile-accordion lg:hidden", extraClass]} open={open}>
-  <summary class="flex items-center justify-between px-4 py-3 cursor-pointer font-mono uppercase text-[0.7rem] tracking-[0.18em] text-ink-muted hover:text-ink bg-parchment-50 border border-parchment-300 rounded-sm select-none">
+<details class:list={["mobile-accordion lg:hidden bg-parchment-50 border border-parchment-300 rounded-sm overflow-hidden", extraClass]} open={open}>
+  <summary class="flex items-center justify-between px-4 py-3 cursor-pointer font-mono uppercase text-[0.7rem] tracking-[0.18em] text-ink-muted hover:text-ink select-none">
     <span class="flex items-center gap-2">
       <span>{label}</span>
       {count !== undefined && (
@@ -21,7 +21,7 @@ const { label, count, open = false, class: extraClass = "" } = Astro.props;
     </span>
     <span class="accordion-chevron text-ink-faded">▸</span>
   </summary>
-  <div class="mt-3">
+  <div class="border-t border-parchment-300/60 px-4 py-3">
     <slot />
   </div>
 </details>

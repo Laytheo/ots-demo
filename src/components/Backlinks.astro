@@ -3,18 +3,21 @@ import { getBacklinks } from "../lib/ots";
 
 interface Props {
   targetId: string;
+  chromeless?: boolean;
 }
 
-const { targetId } = Astro.props;
+const { targetId, chromeless = false } = Astro.props;
 const all = await getBacklinks();
 const sources = all.get(targetId) ?? [];
 const totalMentions = sources.reduce((acc, s) => acc + s.mentions.length, 0);
 ---
-<div class="backlinks">
-  <div class="bl-header">
-    <span>Linked mentions</span>
-    <span class="bl-count">{totalMentions}</span>
-  </div>
+<div class:list={["backlinks", { "backlinks-chromeless": chromeless }]}>
+  { !chromeless && (
+    <div class="bl-header">
+      <span>Linked mentions</span>
+      <span class="bl-count">{totalMentions}</span>
+    </div>
+  ) }
   { sources.length === 0 ? (
     <div class="bl-empty">No linked mentions yet.</div>
   ) : (

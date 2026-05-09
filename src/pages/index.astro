@@ -21,10 +21,10 @@ const connectionCount = local.nodes.length - 1;
 <Base title="OTS Demonstration">
   <div class="lg:hidden mb-6 space-y-3">
     <MobileAccordion label="Properties">
-      <CardCatalog type="journal" data={data} />
+      <CardCatalog type="journal" data={data} chromeless={true} />
     </MobileAccordion>
     <MobileAccordion label="Backlinks" count={backlinkCount}>
-      <Backlinks targetId={entry.id} />
+      <Backlinks targetId={entry.id} chromeless={true} />
     </MobileAccordion>
   </div>
 
@@ -67,9 +67,7 @@ const connectionCount = local.nodes.length - 1;
 
   <div class="lg:hidden mt-6">
     <MobileAccordion label="Local graph" count={connectionCount} open={true}>
-      <div class="border border-parchment-300 bg-parchment-50 p-1 rounded-sm">
-        <LocalGraph client:only="react" graph={local} rootId={entry.id} height={260} />
-      </div>
+      <LocalGraph client:only="react" graph={local} rootId={entry.id} height={260} />
     </MobileAccordion>
   </div>
 </Base>
