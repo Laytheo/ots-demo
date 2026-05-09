@@ -5,7 +5,7 @@ import LocalGraph from "../../components/LocalGraph";
 import Backlinks from "../../components/Backlinks.astro";
 import MobileAccordion from "../../components/MobileAccordion.astro";
 import { getCollection, render } from "astro:content";
-import { ROOT_TYPES, ROOT_COLOR, ROOT_LABEL, getBacklinks, getGraph, localGraph, type RootType } from "../../lib/ots";
+import { ROOT_TYPES, ROOT_LABEL, getBacklinks, getGraph, localGraph, type RootType } from "../../lib/ots";
 
 export async function getStaticPaths() {
   const out: any[] = [];
@@ -54,22 +54,7 @@ const connectionCount = local.nodes.length - 1;
     </aside>
 
     <article class="lg:col-span-6 lg:order-2">
-      <div class="mb-3 font-mono uppercase text-[0.7rem] tracking-[0.18em] text-ink-muted">
-        <a href={`/${type}`} class="hover:text-ink">/{type}</a>
-        <span class="mx-1 text-ink-faded">/</span>
-        <span>{entry.id}</span>
-      </div>
-      <h1 class="font-display italic text-4xl md:text-5xl mb-2 text-ink leading-[1.1]">{data.title}</h1>
-      { type === "journal" && data.date && (
-        <div class="font-mono uppercase text-[0.7rem] tracking-[0.18em] text-ink-muted mb-6">
-          <span style={`color:${ROOT_COLOR.journal}`}>●</span> {data.date}{data.author ? ` · ${data.author}` : ""}
-        </div>
-      ) }
-      { data.subtype && type !== "journal" && (
-        <div class="font-mono uppercase text-[0.7rem] tracking-[0.18em] text-ink-muted mb-6">
-          <span style={`color:${ROOT_COLOR[type]}`}>●</span> {String(data.subtype).replace(/\[\[|\]\]/g, "")}
-        </div>
-      ) }
+      <h1 class="font-display italic text-4xl md:text-5xl mb-6 text-ink leading-[1.1]">{data.title}</h1>
       <div class="prose-body">
         <Content />
       </div>

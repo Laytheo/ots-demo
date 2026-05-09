@@ -5,7 +5,7 @@ import LocalGraph from "../components/LocalGraph";
 import Backlinks from "../components/Backlinks.astro";
 import MobileAccordion from "../components/MobileAccordion.astro";
 import { getEntry, render } from "astro:content";
-import { ROOT_COLOR, getBacklinks, getGraph, localGraph } from "../lib/ots";
+import { getBacklinks, getGraph, localGraph } from "../lib/ots";
 
 const entry = await getEntry("journal", "2026-05-08");
 if (!entry) throw new Error("Today's journal entry not found at journal/2026-05-08.md");
@@ -44,15 +44,7 @@ const connectionCount = local.nodes.length - 1;
     </aside>
 
     <article class="lg:col-span-6 lg:order-2">
-      <div class="mb-3 font-mono uppercase text-[0.7rem] tracking-[0.18em] text-ink-muted">
-        <a href="/journal" class="hover:text-ink">/journal</a>
-        <span class="mx-1 text-ink-faded">/</span>
-        <span>{entry.id}</span>
-      </div>
-      <h1 class="font-display italic text-4xl md:text-5xl mb-2 text-ink leading-[1.1]">{data.title}</h1>
-      <div class="font-mono uppercase text-[0.7rem] tracking-[0.18em] text-ink-muted mb-6">
-        <span style={`color:${ROOT_COLOR.journal}`}>●</span> {data.date}
-      </div>
+      <h1 class="font-display italic text-4xl md:text-5xl mb-6 text-ink leading-[1.1]">{data.title}</h1>
       <div class="prose-body">
         <Content />
       </div>
