@@ -109,7 +109,7 @@ function toIndexEntry(type: RootType, e: AnyEntry): IndexEntry {
     type,
     subtype,
     title: String(data.title ?? e.id),
-    href: `/${type}/${e.id}`,
+    href: e.id === type ? `/${type}` : `/${type}/${e.id}`,
     color: ROOT_COLOR[type],
     data,
   };
