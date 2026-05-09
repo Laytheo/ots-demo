@@ -166,6 +166,21 @@ a { color: inherit; text-decoration: none; }
   height: 4px; width: 4rem; border-radius: 2px;
 }
 
+/* Mobile accordion (details/summary) */
+.mobile-accordion summary {
+  list-style: none;
+}
+.mobile-accordion summary::-webkit-details-marker {
+  display: none;
+}
+.mobile-accordion .accordion-chevron {
+  display: inline-block;
+  transition: transform 150ms ease;
+}
+.mobile-accordion[open] .accordion-chevron {
+  transform: rotate(90deg);
+}
+
 /* Backlinks panel */
 .backlinks {
   background: var(--color-parchment-50);

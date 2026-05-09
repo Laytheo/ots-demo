@@ -3,8 +3,9 @@ import Base from "../layouts/Base.astro";
 import CardCatalog from "../components/CardCatalog.astro";
 import LocalGraph from "../components/LocalGraph";
 import Backlinks from "../components/Backlinks.astro";
+import MobileAccordion from "../components/MobileAccordion.astro";
 import { getEntry, render } from "astro:content";
-import { ROOT_COLOR, getGraph, localGraph } from "../lib/ots";
+import { ROOT_COLOR, getBacklinks, getGraph, localGraph } from "../lib/ots";
 
 const entry = await getEntry("journal", "2026-05-08");
 if (!entry) throw new Error("Today's journal entry not found at journal/2026-05-08.md");
@@ -12,10 +13,23 @@ const { Content } = await render(entry);
 const fullGraph = await getGraph();
 const local = localGraph(fullGraph, entry.id, 1);
 const data = entry.data;
+const allBacklinks = await getBacklinks();
+const backlinkSources = allBacklinks.get(entry.id) ?? [];
+const backlinkCount = backlinkSources.reduce((acc, s) => acc + s.mentions.length, 0);
+const connectionCount = local.nodes.length - 1;
 ---
 <Base title="OTS Demonstration">
+  <div class="lg:hidden mb-6 space-y-3">
+    <MobileAccordion label="Properties">
+      <CardCatalog type="journal" data={data} />
+    </MobileAccordion>
+    <MobileAccordion label="Backlinks" count={backlinkCount}>
+      <Backlinks targetId={entry.id} />
+    </MobileAccordion>
+  </div>
+
   <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-    <aside class="lg:col-span-3 lg:order-1 order-2">
+    <aside class="lg:col-span-3 lg:order-1 hidden lg:block">
       <div class="lg:sticky lg:top-6">
         <CardCatalog type="journal" data={data} />
 
@@ -24,12 +38,12 @@ const data = entry.data;
           <div class="border border-parchment-300 bg-parchment-50 p-1 rounded-sm">
             <LocalGraph client:only="react" graph={local} rootId={entry.id} height={260} />
           </div>
-          <div class="font-mono text-[0.65rem] text-ink-faded mt-2 uppercase tracking-widest">{local.nodes.length - 1} connection{local.nodes.length - 1 === 1 ? "" : "s"}</div>
+          <div class="font-mono text-[0.65rem] text-ink-faded mt-2 uppercase tracking-widest">{connectionCount} connection{connectionCount === 1 ? "" : "s"}</div>
         </div>
       </div>
     </aside>
 
-    <article class="lg:col-span-6 lg:order-2 order-1">
+    <article class="lg:col-span-6 lg:order-2">
       <div class="mb-3 font-mono uppercase text-[0.7rem] tracking-[0.18em] text-ink-muted">
         <a href="/journal" class="hover:text-ink">/journal</a>
         <span class="mx-1 text-ink-faded">/</span>
@@ -44,10 +58,18 @@ const data = entry.data;
       </div>
     </article>
 
-    <aside class="lg:col-span-3 lg:order-3 order-3">
+    <aside class="lg:col-span-3 lg:order-3 hidden lg:block">
       <div class="lg:sticky lg:top-6">
         <Backlinks targetId={entry.id} />
       </div>
     </aside>
   </section>
+
+  <div class="lg:hidden mt-6">
+    <MobileAccordion label="Local graph" count={connectionCount} open={true}>
+      <div class="border border-parchment-300 bg-parchment-50 p-1 rounded-sm">
+        <LocalGraph client:only="react" graph={local} rootId={entry.id} height={260} />
+      </div>
+    </MobileAccordion>
+  </div>
 </Base>
