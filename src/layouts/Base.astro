@@ -1,0 +1,58 @@
+---
+import "../styles/global.css";
+import { ROOT_TYPES, ROOT_COLOR, ROOT_LABEL } from "../lib/ots";
+
+interface Props {
+  title?: string;
+  description?: string;
+  hideRootsStrip?: boolean;
+}
+const { title = "OTS — Demonstrations", description = "A working demonstration of an ontological type system.", hideRootsStrip = false } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="border-b border-parchment-300/70 bg-parchment-50/60 backdrop-blur-sm">
+      <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
+        <div class="flex items-baseline gap-3">
+          <a href="/" class="font-display italic text-2xl text-ink hover:opacity-80">Ontological Type System</a>
+          <a href="https://laytheo.com" target="_blank" rel="noopener" class="font-mono uppercase text-[0.62rem] tracking-[0.22em] text-ink-muted hover:text-ink">A Laytheo Project</a>
+        </div>
+        <nav class="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-ink-muted flex gap-5">
+          <a href="/idea/ontological-type-system" class="hover:text-ink">About</a>
+          <a href="/graph" class="hover:text-ink">Graph</a>
+          <a href="https://github.com/laytheo/ots-demo" class="hover:text-ink">GitHub</a>
+        </nav>
+      </div>
+      { !hideRootsStrip && (
+        <div class="max-w-6xl mx-auto px-5 pb-3">
+          <div class="roots-strip">
+            {ROOT_TYPES.map((t) => (
+              <a href={`/${t}`}>
+                <span class="dot" style={`background:${ROOT_COLOR[t]}`}></span>
+                <span>{ROOT_LABEL[t]}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      ) }
+    </header>
+
+    <main class="max-w-6xl mx-auto px-5 py-10">
+      <slot />
+    </main>
+
+    <footer class="border-t border-parchment-300/70 bg-parchment-50/40 mt-16">
+      <div class="max-w-6xl mx-auto px-5 py-6 font-mono text-[0.68rem] uppercase tracking-[0.2em] text-ink-muted flex flex-wrap gap-4 justify-between">
+        <span>OTS demonstration · read-only static site</span>
+        <span>type · subtype · state · created</span>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,118 @@
+---
+import WikiLink from "./WikiLink.astro";
+import { ROOT_COLOR, ROOT_LABEL, type RootType } from "../lib/ots";
+
+interface Props {
+  type: RootType;
+  data: Record<string, any>;
+  showAll?: boolean;
+}
+
+const { type, data, showAll = false } = Astro.props;
+
+// Define which keys to show, in order, per root type. Common keys appear last.
+const ORDER: Record<RootType, string[]> = {
+  person:  ["title", "subtype", "state", "alternate_names", "birth_date", "death_date", "nationality", "roles", "spouses", "children", "parents", "associations", "created"],
+  place:   ["title", "subtype", "state", "aliases", "region", "country", "coordinates", "associations", "created"],
+  work:    ["title", "subtype", "state", "creator", "parent_work", "publication_year", "associations", "created"],
+  event:   ["title", "subtype", "state", "date_start", "date_end", "era", "place", "participants", "associations", "created"],
+  idea:    ["title", "subtype", "state", "definition", "aliases", "key_people", "associations", "created"],
+  journal: ["title", "subtype", "state", "date", "author", "associations", "created"],
+};
+
+const KEY_LABELS: Record<string, string> = {
+  title: "Title",
+  subtype: "Subtype",
+  state: "State",
+  alternate_names: "Also known as",
+  birth_date: "Born",
+  death_date: "Died",
+  nationality: "Nationality",
+  roles: "Roles",
+  spouses: "Spouses",
+  children: "Children",
+  parents: "Parents",
+  aliases: "Aliases",
+  region: "Region",
+  country: "Country",
+  coordinates: "Coordinates",
+  creator: "Creator",
+  parent_work: "Parent work",
+  publication_year: "Published",
+  date_start: "Start",
+  date_end: "End",
+  era: "Era",
+  place: "Place",
+  participants: "Participants",
+  definition: "Definition",
+  key_people: "Key people",
+  date: "Date",
+  author: "Author",
+  associations: "Associations",
+  created: "Created",
+};
+
+const WIKILINK_FIELDS = new Set([
+  "subtype","creator","parent_work","place","participants","key_people",
+  "spouses","children","parents","associations",
+]);
+
+function looksLikeWikilink(v: unknown): boolean {
+  return typeof v === "string" && /^\[\[.+\]\]$/.test(v.trim());
+}
+
+function fmtDate(v: unknown): string {
+  if (v instanceof Date) return v.toISOString().slice(0, 10);
+  return String(v);
+}
+
+const order = ORDER[type] ?? [];
+const rows: { key: string; label: string; value: any; missing: boolean; isList: boolean; isLinkField: boolean }[] = [];
+for (const k of order) {
+  const v = data[k];
+  const missing = v === undefined || v === null || (Array.isArray(v) && !v.length);
+  if (missing && !showAll) continue;
+  const label = KEY_LABELS[k] ?? k;
+  rows.push({
+    key: k,
+    label,
+    value: v,
+    missing,
+    isList: Array.isArray(v),
+    isLinkField: WIKILINK_FIELDS.has(k),
+  });
+}
+---
+<div class="cardcatalog">
+  <div class="cc-header">
+    <span class="cc-dot" style={`background:${ROOT_COLOR[type]}`}></span>
+    <span>{ROOT_LABEL[type]}{data.subtype ? ` · ${String(data.subtype).replace(/\[\[|\]\]/g, "")}` : ""}</span>
+  </div>
+  {rows.map((r) => (
+    <div class="cc-row">
+      <span class="cc-key">{r.label}</span>
+      <span class="cc-val">
+        { r.missing ? (
+          <span class="cc-empty">—</span>
+        ) : r.isList ? (
+          <span>
+            { (r.value as any[]).map((item: any, i: number) => (
+              <>
+                { (r.isLinkField || looksLikeWikilink(item))
+                  ? <WikiLink raw={String(item)} />
+                  : <span>{String(item)}</span> }
+                { i < (r.value as any[]).length - 1 ? <span class="cc-sep">, </span> : null }
+              </>
+            )) }
+          </span>
+        ) : r.key === "created" || r.key === "date" || r.key === "date_start" || r.key === "date_end" ? (
+          <span>{fmtDate(r.value)}</span>
+        ) : (r.isLinkField || looksLikeWikilink(r.value)) ? (
+          <WikiLink raw={String(r.value)} />
+        ) : (
+          <span>{String(r.value)}</span>
+        ) }
+      </span>
+    </div>
+  ))}
+</div>

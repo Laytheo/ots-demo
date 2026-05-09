@@ -1,0 +1,10 @@
+---
+import Base from "../layouts/Base.astro";
+import GlobalGraph from "../components/GlobalGraph";
+import { getGraph } from "../lib/ots";
+
+const graph = await getGraph();
+---
+<Base title="Graph — OTS Demonstration" hideRootsStrip={true}>
+  <GlobalGraph client:only="react" graph={graph} height={720} />
+</Base>

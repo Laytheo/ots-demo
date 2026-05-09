@@ -1,0 +1,54 @@
+---
+import Base from "../../layouts/Base.astro";
+import CardCatalog from "../../components/CardCatalog.astro";
+import LocalGraph from "../../components/LocalGraph";
+import Backlinks from "../../components/Backlinks.astro";
+import { getEntry, render } from "astro:content";
+import { ROOT_TYPES, ROOT_COLOR, ROOT_LABEL, getGraph, localGraph, type RootType } from "../../lib/ots";
+
+export async function getStaticPaths() {
+  return ROOT_TYPES.map((t) => ({ params: { type: t } }));
+}
+
+const type = Astro.params.type as RootType;
+const entry = await getEntry(type, type);
+if (!entry) throw new Error(`Type note missing for ${type}; expected ${type}/${type}.md`);
+const { Content } = await render(entry);
+const fullGraph = await getGraph();
+const local = localGraph(fullGraph, entry.id, 1);
+const data = entry.data;
+---
+<Base title={`${ROOT_LABEL[type]} — OTS Demonstration`}>
+  <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <aside class="lg:col-span-3 lg:order-1 order-2">
+      <div class="lg:sticky lg:top-6">
+        <CardCatalog type={type} data={data} showAll={true} />
+
+        <div class="mt-6">
+          <div class="font-mono uppercase text-[0.65rem] tracking-[0.18em] text-ink-muted mb-2">Local graph</div>
+          <div class="border border-parchment-300 bg-parchment-50 p-1 rounded-sm">
+            <LocalGraph client:only="react" graph={local} rootId={entry.id} height={260} />
+          </div>
+          <div class="font-mono text-[0.65rem] text-ink-faded mt-2 uppercase tracking-widest">{local.nodes.length - 1} connection{local.nodes.length - 1 === 1 ? "" : "s"}</div>
+        </div>
+      </div>
+    </aside>
+
+    <article class="lg:col-span-6 lg:order-2 order-1">
+      <div class="mb-3 font-mono uppercase text-[0.7rem] tracking-[0.18em] text-ink-muted">/{type}</div>
+      <h1 class="font-display italic text-4xl md:text-5xl mb-6 text-ink leading-[1.1]">
+        <span class="inline-block w-3 h-3 rounded-full mr-3 align-middle" style={`background:${ROOT_COLOR[type]}`}></span>
+        {ROOT_LABEL[type]}
+      </h1>
+      <div class="prose-body">
+        <Content />
+      </div>
+    </article>
+
+    <aside class="lg:col-span-3 lg:order-3 order-3">
+      <div class="lg:sticky lg:top-6">
+        <Backlinks targetId={entry.id} />
+      </div>
+    </aside>
+  </section>
+</Base>

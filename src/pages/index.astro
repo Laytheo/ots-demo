@@ -1,0 +1,53 @@
+---
+import Base from "../layouts/Base.astro";
+import CardCatalog from "../components/CardCatalog.astro";
+import LocalGraph from "../components/LocalGraph";
+import Backlinks from "../components/Backlinks.astro";
+import { getEntry, render } from "astro:content";
+import { ROOT_COLOR, getGraph, localGraph } from "../lib/ots";
+
+const entry = await getEntry("journal", "2026-05-08");
+if (!entry) throw new Error("Today's journal entry not found at journal/2026-05-08.md");
+const { Content } = await render(entry);
+const fullGraph = await getGraph();
+const local = localGraph(fullGraph, entry.id, 1);
+const data = entry.data;
+---
+<Base title="OTS Demonstration">
+  <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <aside class="lg:col-span-3 lg:order-1 order-2">
+      <div class="lg:sticky lg:top-6">
+        <CardCatalog type="journal" data={data} />
+
+        <div class="mt-6">
+          <div class="font-mono uppercase text-[0.65rem] tracking-[0.18em] text-ink-muted mb-2">Local graph</div>
+          <div class="border border-parchment-300 bg-parchment-50 p-1 rounded-sm">
+            <LocalGraph client:only="react" graph={local} rootId={entry.id} height={260} />
+          </div>
+          <div class="font-mono text-[0.65rem] text-ink-faded mt-2 uppercase tracking-widest">{local.nodes.length - 1} connection{local.nodes.length - 1 === 1 ? "" : "s"}</div>
+        </div>
+      </div>
+    </aside>
+
+    <article class="lg:col-span-6 lg:order-2 order-1">
+      <div class="mb-3 font-mono uppercase text-[0.7rem] tracking-[0.18em] text-ink-muted">
+        <a href="/journal" class="hover:text-ink">/journal</a>
+        <span class="mx-1 text-ink-faded">/</span>
+        <span>{entry.id}</span>
+      </div>
+      <h1 class="font-display italic text-4xl md:text-5xl mb-2 text-ink leading-[1.1]">{data.title}</h1>
+      <div class="font-mono uppercase text-[0.7rem] tracking-[0.18em] text-ink-muted mb-6">
+        <span style={`color:${ROOT_COLOR.journal}`}>●</span> {data.date}
+      </div>
+      <div class="prose-body">
+        <Content />
+      </div>
+    </article>
+
+    <aside class="lg:col-span-3 lg:order-3 order-3">
+      <div class="lg:sticky lg:top-6">
+        <Backlinks targetId={entry.id} />
+      </div>
+    </aside>
+  </section>
+</Base>

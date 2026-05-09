@@ -1,0 +1,25 @@
+---
+import { getIndex, resolveWikilink, stripWikilinkBrackets } from "../lib/ots";
+
+interface Props {
+  raw: string;          // "[[Title]]" or "[[Title|alias]]" or just "Title"
+  alias?: string;       // optional override display
+}
+
+const { raw, alias } = Astro.props;
+const idx = await getIndex();
+
+// Detect alias inside the raw [[Title|alias]] form
+let displayLabel: string | null = alias ?? null;
+const aliasMatch = raw.match(/^\s*\[\[([^\]|]+)\|([^\]]+)\]\]\s*$/);
+if (!displayLabel && aliasMatch) displayLabel = aliasMatch[2].trim();
+
+const inner = stripWikilinkBrackets(raw);
+const target = resolveWikilink(idx.index, raw);
+const label = displayLabel ?? inner;
+---
+{ target ? (
+  <a href={target.href} class={`wikilink-resolved wl-${target.type}`}>{label}</a>
+) : (
+  <span class="wl-unresolved" title="unresolved link">{label}</span>
+) }
