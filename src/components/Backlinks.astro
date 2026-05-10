@@ -24,7 +24,7 @@ const totalMentions = sources.reduce((acc, s) => acc + s.mentions.length, 0);
     sources.map((s) => (
       <div class="bl-source">
         <a href={s.href} class="bl-source-title">
-          <span class="bl-dot" style={`background:${s.color}`}></span>
+          <span class="bl-dot" style={`background:var(--color-ots-${s.type})`}></span>
           <span class="bl-source-name">{s.title}</span>
           <span class="bl-source-count">{s.mentions.length}</span>
         </a>

@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
-import { ROOT_TYPES, ROOT_COLOR, ROOT_LABEL } from "../lib/ots";
+import { ROOT_TYPES, ROOT_LABEL, type RootType } from "../lib/ots";
+import ThemeToggle from "../components/ThemeToggle.astro";
 
 interface Props {
   title?: string;
@@ -8,6 +9,11 @@ interface Props {
   hideRootsStrip?: boolean;
 }
 const { title = "OTS — Demonstrations", description = "A working demonstration of an ontological type system.", hideRootsStrip = false } = Astro.props;
+
+const firstSegment = Astro.url.pathname.replace(/\/$/, "").split("/")[1];
+const activeType: RootType | null = ROOT_TYPES.includes(firstSegment as RootType)
+  ? (firstSegment as RootType)
+  : null;
 ---
 <!doctype html>
 <html lang="en">
@@ -16,29 +22,49 @@ const { title = "OTS — Demonstrations", description = "A working demonstration
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <title>{title}</title>
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('ots-theme');
+          var prefersDark = window.matchMedia
+            && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var theme = stored === 'light' || stored === 'dark'
+            ? stored
+            : (prefersDark ? 'dark' : 'light');
+          if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          }
+        } catch (e) { /* localStorage blocked; render light */ }
+      })();
+    </script>
   </head>
   <body>
     <header class="border-b border-parchment-300/70 bg-parchment-50/60 backdrop-blur-sm">
       <div class="max-w-6xl mx-auto px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
-        <div class="flex items-baseline gap-3 flex-wrap">
-          <a href="/" class="font-display italic text-xl sm:text-2xl text-ink hover:opacity-80">Ontological Type System</a>
-          <a href="https://laytheo.com" target="_blank" rel="noopener" class="font-mono uppercase text-[0.62rem] tracking-[0.22em] text-ink-muted hover:text-ink">A Laytheo Project</a>
-        </div>
-        <nav class="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-ink-muted flex gap-5">
+        <a href="/" class="font-display italic text-xl sm:text-2xl text-ink hover:opacity-80">Ontological Type System</a>
+        <nav class="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-ink-muted flex flex-wrap items-center gap-x-3 gap-y-2 sm:gap-x-5">
           <a href="/idea/ontological-type-system" class="hover:text-ink">About</a>
           <a href="/graph" class="hover:text-ink">Graph</a>
           <a href="https://github.com/Laytheo/ots-demo" class="hover:text-ink">GitHub</a>
+          <a href="https://laytheo.com" class="hover:text-ink">Laytheo.com</a>
+          <ThemeToggle />
         </nav>
       </div>
       { !hideRootsStrip && (
-        <div class="max-w-6xl mx-auto px-5 pb-3">
-          <div class="roots-strip">
-            {ROOT_TYPES.map((t) => (
-              <a href={`/${t}`}>
-                <span class="dot" style={`background:${ROOT_COLOR[t]}`}></span>
-                <span>{ROOT_LABEL[t]}</span>
-              </a>
-            ))}
+        <div class="roots-bar">
+          <div class="max-w-6xl mx-auto px-5">
+            <div class="roots-strip">
+              {ROOT_TYPES.map((t) => (
+                <a
+                  href={`/${t}`}
+                  class:list={["root-tab", { active: activeType === t }]}
+                  style={`--tab-color:var(--color-ots-${t})`}
+                >
+                  <span class="dot" style={`background:var(--color-ots-${t})`}></span>
+                  <span>{ROOT_LABEL[t]}</span>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       ) }

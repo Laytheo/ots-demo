@@ -1,0 +1,139 @@
+<button
+  type="button"
+  class="theme-toggle"
+  aria-label="Toggle dark mode"
+  aria-pressed="false"
+  data-theme-toggle
+>
+  <span class="theme-track" aria-hidden="true">
+    <svg class="theme-end theme-end-sun" viewBox="0 0 24 24" width="9" height="9">
+      <circle cx="12" cy="12" r="4.2" fill="currentColor"/>
+      <g stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="12" y1="2" x2="12" y2="5"/>
+        <line x1="12" y1="19" x2="12" y2="22"/>
+        <line x1="2" y1="12" x2="5" y2="12"/>
+        <line x1="19" y1="12" x2="22" y2="12"/>
+        <line x1="5" y1="5" x2="7.1" y2="7.1"/>
+        <line x1="16.9" y1="16.9" x2="19" y2="19"/>
+        <line x1="5" y1="19" x2="7.1" y2="16.9"/>
+        <line x1="16.9" y1="7.1" x2="19" y2="5"/>
+      </g>
+    </svg>
+    <svg class="theme-end theme-end-moon" viewBox="0 0 24 24" width="9" height="9">
+      <path d="M20.5 14.2A8.2 8.2 0 0 1 9.8 3.5a.6.6 0 0 0-.78-.74A9.5 9.5 0 1 0 21.24 14.98a.6.6 0 0 0-.74-.78z" fill="currentColor"/>
+    </svg>
+    <span class="theme-knob"></span>
+  </span>
+</button>
+
+<style>
+  .theme-toggle {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+    color: var(--color-ink-muted);
+    transition: color .15s;
+  }
+  .theme-toggle:hover { color: var(--color-ink); }
+  .theme-toggle:focus-visible {
+    outline: 1px solid var(--color-ots-person);
+    outline-offset: 4px;
+    border-radius: 999px;
+  }
+
+  .theme-track {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 40px;
+    height: 18px;
+    padding: 0 4.5px;
+    border: 1.25px solid currentColor;
+    border-radius: 999px;
+    color: var(--color-ink-faded);
+    transition: color .15s;
+  }
+  .theme-toggle:hover .theme-track { color: var(--color-ink-muted); }
+
+  .theme-end {
+    display: block;
+    color: var(--color-ink-faded);
+    transition: opacity .2s ease;
+  }
+  /* Light mode: sun bright, moon faint. Dark mode: inverted. */
+  .theme-end-sun  { opacity: 1; }
+  .theme-end-moon { opacity: .55; }
+  :global([data-theme="dark"]) .theme-end-sun  { opacity: .55; }
+  :global([data-theme="dark"]) .theme-end-moon { opacity: 1; }
+
+  .theme-knob {
+    position: absolute;
+    top: 50%;
+    left: 2.5px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--color-ink-muted);
+    transform: translate(0, -50%);
+    transition: transform .22s cubic-bezier(.4, .1, .3, 1), background-color .15s;
+  }
+  .theme-toggle:hover .theme-knob { background: var(--color-ink); }
+  /* Track inner travel: 40 - 2*2.5 - 11 = 24px. */
+  :global([data-theme="dark"]) .theme-knob {
+    transform: translate(24px, -50%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .theme-knob, .theme-end { transition: none; }
+  }
+</style>
+
+<script>
+  // The pre-paint script in Base.astro has already applied the theme attribute
+  // before this runs.
+  const root = document.documentElement;
+  const STORAGE_KEY = 'ots-theme';
+
+  function syncPressed() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) => {
+      btn.setAttribute('aria-pressed', String(isDark));
+    });
+  }
+
+  function applyTheme(theme: 'light' | 'dark') {
+    if (theme === 'dark') root.setAttribute('data-theme', 'dark');
+    else root.removeAttribute('data-theme');
+    syncPressed();
+  }
+
+  syncPressed();
+
+  document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem(STORAGE_KEY, next);
+      } catch {
+        /* storage unavailable; theme still applies for this session */
+      }
+      applyTheme(next);
+    });
+  });
+
+  // Track system preference changes only while the user has not made a manual choice.
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  mq.addEventListener('change', (e) => {
+    let stored: string | null = null;
+    try { stored = localStorage.getItem(STORAGE_KEY); } catch {}
+    if (stored !== 'light' && stored !== 'dark') {
+      applyTheme(e.matches ? 'dark' : 'light');
+    }
+  });
+</script>
