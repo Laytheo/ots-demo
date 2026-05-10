@@ -48,6 +48,11 @@ const work = defineCollection({
     parent_work: wikilink.optional(),
     creator: wikilinks.optional(),
     publication_year: z.union([z.number(), z.string()]).optional(),
+    aliases: z.array(z.string()).optional(),
+    book: wikilink.optional(),
+    chapter: z.union([z.number(), z.string()]).optional(),
+    testament: z.string().optional(),
+    genre: z.string().optional(),
   }),
 });
 

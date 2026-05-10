@@ -16,7 +16,7 @@ const { type, data, showAll = false, chromeless = false } = Astro.props;
 const ORDER: Record<RootType, string[]> = {
   person:  ["title", "subtype", "state", "alternate_names", "birth_date", "death_date", "nationality", "roles", "spouses", "children", "parents", "associations", "created"],
   place:   ["title", "subtype", "state", "aliases", "region", "country", "coordinates", "associations", "created"],
-  work:    ["title", "subtype", "state", "creator", "parent_work", "publication_year", "associations", "created"],
+  work:    ["title", "subtype", "state", "aliases", "creator", "parent_work", "publication_year", "book", "chapter", "testament", "genre", "associations", "created"],
   event:   ["title", "subtype", "state", "date_start", "date_end", "era", "place", "participants", "associations", "created"],
   idea:    ["title", "subtype", "state", "transliteration", "pronunciation", "ipa", "part_of_speech", "strongs_number", "register", "definition", "aliases", "key_people", "associations", "created"],
   journal: ["title", "subtype", "state", "date", "author", "associations", "created"],
@@ -41,6 +41,10 @@ const KEY_LABELS: Record<string, string> = {
   creator: "Creator",
   parent_work: "Parent work",
   publication_year: "Published",
+  book: "Book",
+  chapter: "Chapter",
+  testament: "Testament",
+  genre: "Genre",
   date_start: "Start",
   date_end: "End",
   era: "Era",
@@ -62,7 +66,7 @@ const KEY_LABELS: Record<string, string> = {
 
 const WIKILINK_FIELDS = new Set([
   "subtype","creator","parent_work","place","participants","key_people",
-  "spouses","children","parents","associations",
+  "spouses","children","parents","associations","book",
 ]);
 
 function looksLikeWikilink(v: unknown): boolean {
