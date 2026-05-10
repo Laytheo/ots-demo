@@ -48,6 +48,11 @@ const work = defineCollection({
     parent_work: wikilink.optional(),
     creator: wikilinks.optional(),
     publication_year: z.union([z.number(), z.string()]).optional(),
+    aliases: z.array(z.string()).optional(),
+    book: wikilink.optional(),
+    chapter: z.union([z.number(), z.string()]).optional(),
+    testament: z.string().optional(),
+    genre: z.string().optional(),
   }),
 });
 
@@ -72,6 +77,12 @@ const idea = defineCollection({
     definition: z.string().optional(),
     aliases: z.array(z.string()).optional(),
     key_people: wikilinks.optional(),
+    pronunciation: z.string().optional(),
+    ipa: z.string().optional(),
+    transliteration: z.string().optional(),
+    part_of_speech: z.string().optional(),
+    strongs_number: z.string().optional(),
+    register: z.string().optional(),
   }),
 });
 
