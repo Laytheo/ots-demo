@@ -178,11 +178,15 @@ a { color: inherit; text-decoration: none; }
   border-bottom: 1px dotted currentColor;
 }
 
-/* Six-roots strip */
+/* Six-roots tab bar */
+.roots-bar {
+  border-top: 1px solid color-mix(in oklab, var(--color-parchment-300) 60%, transparent);
+  background: color-mix(in oklab, var(--color-parchment-100) 60%, transparent);
+}
 .roots-strip {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.55rem 0.85rem;
+  gap: 0;
   font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.12em;
@@ -190,22 +194,40 @@ a { color: inherit; text-decoration: none; }
 }
 @media (min-width: 640px) {
   .roots-strip {
-    gap: 1.25rem;
     font-size: 0.7rem;
     letter-spacing: 0.16em;
   }
 }
-.roots-strip a {
-  display: inline-flex; align-items: center; gap: 0.4rem;
+.roots-strip .root-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.6rem;
+  border-top: 2px solid transparent;
+  margin-top: -1px;
   color: var(--color-ink-soft);
+  transition: color .15s, border-color .15s, background-color .15s;
 }
-.roots-strip a:hover { color: var(--color-ink); }
+@media (min-width: 640px) {
+  .roots-strip .root-tab {
+    gap: 0.45rem;
+    padding: 0.5rem 0.85rem;
+  }
+}
+.roots-strip .root-tab:hover {
+  color: var(--color-ink);
+  border-top-color: color-mix(in oklab, var(--tab-color) 50%, transparent);
+}
+.roots-strip .root-tab.active {
+  color: var(--color-ink);
+  border-top-color: var(--tab-color);
+  background: color-mix(in oklab, var(--color-parchment-50) 70%, transparent);
+}
 .roots-strip .dot {
   width: 0.5rem; height: 0.5rem; border-radius: 9999px;
 }
 @media (min-width: 640px) {
   .roots-strip .dot { width: 0.55rem; height: 0.55rem; }
-  .roots-strip a { gap: 0.45rem; }
 }
 
 /* Type-page accent rule */
