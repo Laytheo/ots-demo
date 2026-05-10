@@ -182,19 +182,30 @@ a { color: inherit; text-decoration: none; }
 .roots-strip {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.25rem;
+  gap: 0.55rem 0.85rem;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.16em;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
+@media (min-width: 640px) {
+  .roots-strip {
+    gap: 1.25rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+  }
+}
 .roots-strip a {
-  display: inline-flex; align-items: center; gap: 0.45rem;
+  display: inline-flex; align-items: center; gap: 0.4rem;
   color: var(--color-ink-soft);
 }
 .roots-strip a:hover { color: var(--color-ink); }
 .roots-strip .dot {
-  width: 0.55rem; height: 0.55rem; border-radius: 9999px;
+  width: 0.5rem; height: 0.5rem; border-radius: 9999px;
+}
+@media (min-width: 640px) {
+  .roots-strip .dot { width: 0.55rem; height: 0.55rem; }
+  .roots-strip a { gap: 0.45rem; }
 }
 
 /* Type-page accent rule */
