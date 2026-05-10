@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
-import { ROOT_TYPES, ROOT_COLOR, ROOT_LABEL } from "../lib/ots";
+import { ROOT_TYPES, ROOT_LABEL } from "../lib/ots";
+import ThemeToggle from "../components/ThemeToggle.astro";
 
 interface Props {
   title?: string;
@@ -16,6 +17,21 @@ const { title = "OTS — Demonstrations", description = "A working demonstration
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <title>{title}</title>
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('ots-theme');
+          var prefersDark = window.matchMedia
+            && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var theme = stored === 'light' || stored === 'dark'
+            ? stored
+            : (prefersDark ? 'dark' : 'light');
+          if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          }
+        } catch (e) { /* localStorage blocked; render light */ }
+      })();
+    </script>
   </head>
   <body>
     <header class="border-b border-parchment-300/70 bg-parchment-50/60 backdrop-blur-sm">
@@ -24,10 +40,11 @@ const { title = "OTS — Demonstrations", description = "A working demonstration
           <a href="/" class="font-display italic text-xl sm:text-2xl text-ink hover:opacity-80">Ontological Type System</a>
           <a href="https://laytheo.com" target="_blank" rel="noopener" class="font-mono uppercase text-[0.62rem] tracking-[0.22em] text-ink-muted hover:text-ink">A Laytheo Project</a>
         </div>
-        <nav class="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-ink-muted flex gap-5">
+        <nav class="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-ink-muted flex items-center gap-5">
           <a href="/idea/ontological-type-system" class="hover:text-ink">About</a>
           <a href="/graph" class="hover:text-ink">Graph</a>
           <a href="https://github.com/Laytheo/ots-demo" class="hover:text-ink">GitHub</a>
+          <ThemeToggle />
         </nav>
       </div>
       { !hideRootsStrip && (
@@ -35,7 +52,7 @@ const { title = "OTS — Demonstrations", description = "A working demonstration
           <div class="roots-strip">
             {ROOT_TYPES.map((t) => (
               <a href={`/${t}`}>
-                <span class="dot" style={`background:${ROOT_COLOR[t]}`}></span>
+                <span class="dot" style={`background:var(--color-ots-${t})`}></span>
                 <span>{ROOT_LABEL[t]}</span>
               </a>
             ))}

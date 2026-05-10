@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import ForceGraph2D, { type ForceGraphMethods } from "react-force-graph-2d";
 import { forceCollide } from "d3-force-3d";
 import type { Graph, GraphNode, RootType } from "../lib/ots";
+import { useThemeColors } from "../lib/useThemeColors";
 
 interface Props {
   graph: Graph;
@@ -9,10 +10,6 @@ interface Props {
 }
 
 const ROOTS: RootType[] = ["person", "place", "work", "event", "idea", "journal"];
-const ROOT_COLOR: Record<RootType, string> = {
-  person: "#7A1F2B", place: "#2D5238", work: "#1F3A5F",
-  event: "#A67619", idea: "#B8401F", journal: "#5B3A6B",
-};
 
 const NODE_REL_SIZE = 5;
 const TYPE_VAL = 2.5; // sqrt(2.5) ≈ 1.58x radius vs val=1
@@ -25,6 +22,7 @@ export default function GlobalGraph({ graph, height = 600 }: Props) {
   const [width, setWidth] = useState<number>(800);
   const [enabled, setEnabled] = useState<Set<RootType>>(new Set(ROOTS));
   const [hovered, setHovered] = useState<GraphNode | null>(null);
+  const colors = useThemeColors();
 
   useEffect(() => {
     if (!wrapRef.current) return;
@@ -75,7 +73,7 @@ export default function GlobalGraph({ graph, height = 600 }: Props) {
           fontSize: "0.65rem",
           letterSpacing: "0.18em",
           textTransform: "uppercase",
-          color: "#6B5F50",
+          color: colors.inkMuted,
           marginBottom: "0.5rem",
         }}
       >
@@ -91,14 +89,14 @@ export default function GlobalGraph({ graph, height = 600 }: Props) {
               className="px-3 py-1 rounded-full text-xs uppercase tracking-widest border transition"
               style={{
                 fontFamily: "JetBrains Mono, ui-monospace, monospace",
-                borderColor: on ? ROOT_COLOR[t] : "#DBCFB8",
-                color: on ? ROOT_COLOR[t] : "#9B8E7C",
-                background: on ? "rgba(255,255,255,0.6)" : "transparent",
+                borderColor: on ? colors.root[t] : colors.border,
+                color: on ? colors.root[t] : colors.inkFaded,
+                background: on ? `color-mix(in oklab, ${colors.bg} 60%, transparent)` : "transparent",
               }}
             >
               <span style={{
                 display: "inline-block", width: 8, height: 8, borderRadius: 9999,
-                background: ROOT_COLOR[t], marginRight: 6, verticalAlign: "middle",
+                background: colors.root[t], marginRight: 6, verticalAlign: "middle",
                 opacity: on ? 1 : 0.4,
               }} />
               {t}
@@ -107,17 +105,17 @@ export default function GlobalGraph({ graph, height = 600 }: Props) {
         })}
       </div>
 
-      <div ref={wrapRef} style={{ width: "100%", height, position: "relative", border: "1px solid #DBCFB8", background: "#FBF8F1", borderRadius: 2 }}>
+      <div ref={wrapRef} style={{ width: "100%", height, position: "relative", border: `1px solid ${colors.border}`, background: colors.bg, borderRadius: 2 }}>
         <ForceGraph2D
           ref={fgRef}
           graphData={data}
           width={width}
           height={height}
-          backgroundColor="#FBF8F1"
+          backgroundColor={colors.bg}
           nodeRelSize={5}
-          nodeColor={(n: any) => n.color}
+          nodeColor={(n: any) => colors.root[n.type as RootType]}
           nodeLabel={(n: any) => `${n.title} · ${n.type}`}
-          linkColor={() => "rgba(60, 50, 40, 0.2)"}
+          linkColor={() => colors.link}
           linkWidth={1}
           cooldownTicks={120}
           d3VelocityDecay={0.25}
@@ -130,7 +128,7 @@ export default function GlobalGraph({ graph, height = 600 }: Props) {
             const fontSize = (typeNode ? 14 : 11) / globalScale;
             const weight = typeNode ? "600" : "400";
             ctx.font = `${weight} ${fontSize}px "Newsreader", Georgia, serif`;
-            ctx.fillStyle = typeNode ? "#1A1612" : "#3D352B";
+            ctx.fillStyle = typeNode ? colors.ink : colors.inkSoft;
             ctx.textAlign = "left";
             ctx.textBaseline = "middle";
             ctx.fillText(n.title, n.x + nodeRadius(n) + 4, n.y);
@@ -140,16 +138,16 @@ export default function GlobalGraph({ graph, height = 600 }: Props) {
           <div
             style={{
               position: "absolute", bottom: 12, left: 12,
-              background: "#FBF8F1", border: "1px solid #DBCFB8", padding: "0.5rem 0.75rem",
+              background: colors.bg, border: `1px solid ${colors.border}`, padding: "0.5rem 0.75rem",
               fontFamily: "JetBrains Mono, ui-monospace, monospace", fontSize: "0.72rem",
-              color: "#3D352B", maxWidth: 320, pointerEvents: "none",
+              color: colors.inkSoft, maxWidth: 320, pointerEvents: "none",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ width: 8, height: 8, borderRadius: 9999, background: hovered.color }} />
-              <span style={{ textTransform: "uppercase", letterSpacing: "0.12em", color: "#6B5F50" }}>{hovered.type}{hovered.subtype ? ` · ${hovered.subtype}` : ""}</span>
+              <span style={{ width: 8, height: 8, borderRadius: 9999, background: colors.root[hovered.type] }} />
+              <span style={{ textTransform: "uppercase", letterSpacing: "0.12em", color: colors.inkMuted }}>{hovered.type}{hovered.subtype ? ` · ${hovered.subtype}` : ""}</span>
             </div>
-            <div style={{ marginTop: 4, fontFamily: "Newsreader, Georgia, serif", fontSize: "0.95rem", color: "#1A1612" }}>{hovered.title}</div>
+            <div style={{ marginTop: 4, fontFamily: "Newsreader, Georgia, serif", fontSize: "0.95rem", color: colors.ink }}>{hovered.title}</div>
           </div>
         )}
       </div>
