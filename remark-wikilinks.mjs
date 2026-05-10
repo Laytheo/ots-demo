@@ -109,7 +109,10 @@ export default function remarkWikilinks() {
         } else {
           parts.push({
             type: "emphasis",
-            data: { hProperties: { className: "wl-unresolved" } },
+            data: {
+              hName: "span",
+              hProperties: { className: "wl-unresolved", title: "Not yet written" },
+            },
             children: [{ type: "text", value: label }],
           });
         }

@@ -6,6 +6,8 @@ import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
 
 import remarkWikilinks from './remark-wikilinks.mjs';
+import remarkBibleCallout from './remark-bible-callout.mjs';
+import remarkHighlight from './remark-highlight.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -16,6 +18,6 @@ export default defineConfig({
   integrations: [react(), mdx()],
 
   markdown: {
-    remarkPlugins: [remarkWikilinks],
+    remarkPlugins: [remarkBibleCallout, remarkHighlight, remarkWikilinks],
   },
 });

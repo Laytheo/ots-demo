@@ -18,7 +18,7 @@ const ORDER: Record<RootType, string[]> = {
   place:   ["title", "subtype", "state", "aliases", "region", "country", "coordinates", "associations", "created"],
   work:    ["title", "subtype", "state", "creator", "parent_work", "publication_year", "associations", "created"],
   event:   ["title", "subtype", "state", "date_start", "date_end", "era", "place", "participants", "associations", "created"],
-  idea:    ["title", "subtype", "state", "definition", "aliases", "key_people", "associations", "created"],
+  idea:    ["title", "subtype", "state", "transliteration", "pronunciation", "ipa", "part_of_speech", "strongs_number", "register", "definition", "aliases", "key_people", "associations", "created"],
   journal: ["title", "subtype", "state", "date", "author", "associations", "created"],
 };
 
@@ -48,6 +48,12 @@ const KEY_LABELS: Record<string, string> = {
   participants: "Participants",
   definition: "Definition",
   key_people: "Key people",
+  transliteration: "Transliteration",
+  pronunciation: "Pronunciation",
+  ipa: "IPA",
+  part_of_speech: "Part of speech",
+  strongs_number: "Strong's",
+  register: "Register",
   date: "Date",
   author: "Author",
   associations: "Associations",
