@@ -19,15 +19,6 @@ const backlinkCount = backlinkSources.reduce((acc, s) => acc + s.mentions.length
 const connectionCount = local.nodes.length - 1;
 ---
 <Base title="OTS Demonstration">
-  <div class="lg:hidden mb-6 space-y-3">
-    <MobileAccordion label="Properties">
-      <CardCatalog type="journal" data={data} chromeless={true} />
-    </MobileAccordion>
-    <MobileAccordion label="Backlinks" count={backlinkCount}>
-      <Backlinks targetId={entry.id} chromeless={true} />
-    </MobileAccordion>
-  </div>
-
   <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
     <aside class="lg:col-span-3 lg:order-1 hidden lg:block">
       <div class="lg:sticky lg:top-6">
@@ -45,6 +36,14 @@ const connectionCount = local.nodes.length - 1;
 
     <article class="lg:col-span-6 lg:order-2">
       <h1 class="font-display italic text-4xl md:text-5xl mb-6 text-ink leading-[1.1]">{data.title}</h1>
+      <div class="lg:hidden mb-6 space-y-3">
+        <MobileAccordion label="Properties">
+          <CardCatalog type="journal" data={data} chromeless={true} />
+        </MobileAccordion>
+        <MobileAccordion label="Backlinks" count={backlinkCount}>
+          <Backlinks targetId={entry.id} chromeless={true} />
+        </MobileAccordion>
+      </div>
       <div class="prose-body">
         <Content />
       </div>
