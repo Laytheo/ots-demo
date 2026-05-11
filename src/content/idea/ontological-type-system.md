@@ -2,7 +2,6 @@
 type: "[[Idea]]"
 subtype: "[[Instrument]]"
 title: "Ontological Type System"
-definition: "A personal knowledge method built around six closed root types and a small number of templated subtypes, in which every note is one of those types and nothing is untyped."
 aliases: ["OTS", "the system"]
 state: Stable
 created: 2026-05-08
