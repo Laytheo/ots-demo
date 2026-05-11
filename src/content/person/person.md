@@ -6,4 +6,4 @@ created: 2026-05-08
 associations: ["[[Ontological Type System]]"]
 ---
 
-[[Person]]: any rational creature, living or dead, biblical, historical, contemporary, or personal. [[Thomas Aquinas]] and [[Daniel Renner]] are both persons.
+Any rational creature, living or dead, biblical, historical, contemporary, or personal. [[Thomas Aquinas]] and [[Daniel Renner]] are both persons.
