@@ -35,6 +35,8 @@ const totalMentions = sources.reduce((acc, s) => acc + s.mentions.length, 0);
                 <span class="bl-field">{m.field}:</span>
                 <span class="bl-hit">{m.label}</span>
               </>
+            ) : m.kind === "preview" ? (
+              <span class="bl-context">{m.text}</span>
             ) : (
               <>
                 <span class="bl-context">{m.before}</span><span class="bl-hit">{m.label}</span><span class="bl-context">{m.after}</span>
