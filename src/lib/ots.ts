@@ -254,7 +254,7 @@ function stripIncidentalLinks(s: string): string {
   return s.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, t, a) => a || t);
 }
 
-function bodyPreview(body: string, maxLen = 200): string {
+function bodyPreview(body: string, maxLen = 100): string {
   if (!body) return "";
   let s = body
     .replace(/^>\s*\[![^\]]*\][+-]?\s*[^\n]*/gm, "")
