@@ -10,6 +10,7 @@ const baseFields = {
   state: z.enum(["Seed", "Developing", "Stable"]),
   created: z.coerce.date(),
   associations: wikilinks.default([]),
+  demo_widget: z.string().optional(),
 };
 
 const person = defineCollection({

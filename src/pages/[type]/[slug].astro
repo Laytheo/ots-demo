@@ -4,6 +4,7 @@ import CardCatalog from "../../components/CardCatalog.astro";
 import LocalGraph from "../../components/LocalGraph";
 import Backlinks from "../../components/Backlinks.astro";
 import MobileAccordion from "../../components/MobileAccordion.astro";
+import TypingDemo from "../../components/TypingDemo.astro";
 import { getCollection, render } from "astro:content";
 import { ROOT_TYPES, ROOT_LABEL, getBacklinks, getGraph, localGraph, type RootType } from "../../lib/ots";
 
@@ -55,6 +56,7 @@ const connectionCount = local.nodes.length - 1;
 
     <article class="lg:col-span-6 lg:order-2">
       <h1 class="font-display italic text-4xl md:text-5xl mb-6 text-ink leading-[1.1]">{data.title}</h1>
+      {data.demo_widget === "bible-callout" && <TypingDemo />}
       <div class="prose-body">
         <Content />
       </div>

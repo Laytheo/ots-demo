@@ -9,6 +9,7 @@ participants: ["[[Daniel Renner]]"]
 associations: ["[[easter]]", "[[resurrection]]", "[[luke-24]]", "[[the-witness-of-easter]]"]
 state: Stable
 created: 2026-05-10
+demo_widget: bible-callout
 ---
 
 Imagine this is a note you took at a sermon, while listening to a podcast, or anywhere else you encounter scripture. If you use the [[Capturing Scripture]] method, this is what your notes might look like. What follows is one fictional example.

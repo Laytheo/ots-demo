@@ -1,0 +1,81 @@
+---
+// TypingDemo.astro
+// Looping animation that shows the Capturing Scripture method in action:
+// types "--Luke 24:12" and reveals the rendered Bible callout.
+//
+// Activated by setting `demo_widget: "bible-callout"` on a note's frontmatter.
+
+interface Props {
+  variant?: string;
+}
+---
+
+<aside class="typing-demo" data-typing-demo>
+  <div class="demo-caption">
+    Demo · writing a Bible callout
+  </div>
+
+  <div class="demo-input">
+    <span class="demo-input-text" data-typing-input></span><span class="demo-cursor" aria-hidden="true"></span>
+  </div>
+
+  <div class="demo-arrow" aria-hidden="true">becomes</div>
+
+  <div class="demo-output" data-typing-output>
+    <aside class="bible-callout">
+      <div class="bc-header">
+        <span class="bc-citation">Luke 24:12</span>
+        <span class="bc-translation">KJV</span>
+        <span class="bc-chapter"><span class="wl-unresolved" title="Not yet written">Luke 24</span></span>
+      </div>
+      <div class="bc-body">
+        <sup class="bc-verse-num">12</sup> Then arose Peter, and ran unto the sepulchre; and stooping down, he beheld the linen clothes laid by themselves, and departed, <mark class="hl">wondering</mark> in himself at that which was come to pass.
+      </div>
+    </aside>
+  </div>
+</aside>
+
+<script>
+  const TEXT = "--Luke 24:12";
+  const TYPE_MS = 95;
+  const TYPE_JITTER = 50;
+  const PAUSE_AFTER_TYPE = 500;
+  const HOLD_OUTPUT = 5000;
+  const RESET_PAUSE = 600;
+
+  function sleep(ms: number): Promise<void> {
+    return new Promise((r) => setTimeout(r, ms));
+  }
+
+  async function runLoop(input: HTMLElement, output: HTMLElement) {
+    while (true) {
+      input.textContent = "";
+      output.classList.remove("visible");
+      await sleep(RESET_PAUSE);
+      for (let i = 0; i <= TEXT.length; i++) {
+        input.textContent = TEXT.slice(0, i);
+        await sleep(TYPE_MS + Math.random() * TYPE_JITTER);
+      }
+      await sleep(PAUSE_AFTER_TYPE);
+      output.classList.add("visible");
+      await sleep(HOLD_OUTPUT);
+    }
+  }
+
+  function init(root: HTMLElement) {
+    const input = root.querySelector<HTMLElement>("[data-typing-input]");
+    const output = root.querySelector<HTMLElement>("[data-typing-output]");
+    if (!input || !output) return;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      input.textContent = TEXT;
+      output.classList.add("visible");
+      return;
+    }
+
+    runLoop(input, output);
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-typing-demo]").forEach(init);
+</script>
