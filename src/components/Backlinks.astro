@@ -29,7 +29,7 @@ const totalMentions = sources.reduce((acc, s) => acc + s.mentions.length, 0);
           <span class="bl-source-count">{s.mentions.length}</span>
         </a>
         {s.mentions.map((m) => (
-          <div class="bl-mention">
+          <a href={s.href} class="bl-mention">
             { m.kind === "frontmatter" ? (
               <>
                 <span class="bl-field">{m.field}:</span>
@@ -42,7 +42,7 @@ const totalMentions = sources.reduce((acc, s) => acc + s.mentions.length, 0);
                 <span class="bl-context">{m.before}</span><span class="bl-hit">{m.label}</span><span class="bl-context">{m.after}</span>
               </>
             ) }
-          </div>
+          </a>
         ))}
       </div>
     ))
