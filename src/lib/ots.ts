@@ -223,12 +223,13 @@ export async function buildGraph(opts: { idx?: IndexResult } = {}): Promise<Grap
 }
 
 export interface BacklinkMention {
-  kind: "frontmatter" | "body";
+  kind: "frontmatter" | "body" | "preview";
   field?: string;
   before?: string;
   after?: string;
-  raw: string;
-  label: string;
+  raw?: string;
+  label?: string;
+  text?: string;
 }
 
 export interface BacklinkSource {
@@ -253,6 +254,28 @@ function stripIncidentalLinks(s: string): string {
   return s.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, t, a) => a || t);
 }
 
+function bodyPreview(body: string, maxLen = 100): string {
+  if (!body) return "";
+  let s = body
+    .replace(/^>\s*\[![^\]]*\][+-]?\s*[^\n]*/gm, "")
+    .replace(/^>\s*/gm, "")
+    .replace(/^#+\s+/gm, "")
+    .replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, t, a) => a || t)
+    .replace(/==([^=]+)==/g, "$1")
+    .replace(/[*_`]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (s.length > maxLen) {
+    s = s.slice(0, maxLen);
+    const sp = s.lastIndexOf(" ");
+    if (sp > 40) s = s.slice(0, sp);
+    s += "…";
+  }
+  return s;
+}
+
+const SKIP_FRONTMATTER_FIELDS = new Set(["type", "subtype"]);
+
 export async function buildBacklinks(): Promise<Map<string, BacklinkSource[]>> {
   const idx = await getIndex();
   const collections = await Promise.all(
@@ -264,7 +287,8 @@ export async function buildBacklinks(): Promise<Map<string, BacklinkSource[]>> {
   const flat = collections.flat();
 
   const out = new Map<string, Map<string, BacklinkSource>>();
-  const add = (targetId: string, source: IndexEntry, mention: BacklinkMention) => {
+  const sourceBodies = new Map<string, string>();
+  const ensureSource = (targetId: string, source: IndexEntry): BacklinkSource => {
     let by = out.get(targetId);
     if (!by) { by = new Map(); out.set(targetId, by); }
     let s = by.get(source.id);
@@ -280,7 +304,10 @@ export async function buildBacklinks(): Promise<Map<string, BacklinkSource[]>> {
       };
       by.set(source.id, s);
     }
-    s.mentions.push(mention);
+    return s;
+  };
+  const add = (targetId: string, source: IndexEntry, mention: BacklinkMention) => {
+    ensureSource(targetId, source).mentions.push(mention);
   };
 
   for (const { entry } of flat) {
@@ -292,6 +319,7 @@ export async function buildBacklinks(): Promise<Map<string, BacklinkSource[]>> {
       idx.index.get(slugify(sourceTitle)) ??
       idx.index.get(entry.id.toLowerCase());
     if (!source) continue;
+    sourceBodies.set(source.id, body);
 
     // Frontmatter links
     for (const f of FRONTMATTER_LINK_FIELDS) {
@@ -302,6 +330,10 @@ export async function buildBacklinks(): Promise<Map<string, BacklinkSource[]>> {
         if (typeof item !== "string") continue;
         const target = resolveWikilink(idx.index, item);
         if (!target || target.id === source.id) continue;
+        if (SKIP_FRONTMATTER_FIELDS.has(f)) {
+          ensureSource(target.id, source);
+          continue;
+        }
         const inner = stripWikilinkBrackets(item);
         const aliasMatch = item.match(/^\s*\[\[([^\]|]+)\|([^\]]+)\]\]\s*$/);
         const label = aliasMatch ? aliasMatch[2].trim() : inner;
@@ -343,7 +375,15 @@ export async function buildBacklinks(): Promise<Map<string, BacklinkSource[]>> {
 
   const finalMap = new Map<string, BacklinkSource[]>();
   for (const [targetId, bySource] of out) {
-    const arr = Array.from(bySource.values()).sort((a, b) => a.title.localeCompare(b.title));
+    for (const s of bySource.values()) {
+      if (s.mentions.length === 0) {
+        const text = bodyPreview(sourceBodies.get(s.id) ?? "");
+        if (text) s.mentions.push({ kind: "preview", text });
+      }
+    }
+    const arr = Array.from(bySource.values())
+      .filter((s) => s.mentions.length > 0)
+      .sort((a, b) => a.title.localeCompare(b.title));
     finalMap.set(targetId, arr);
   }
   return finalMap;

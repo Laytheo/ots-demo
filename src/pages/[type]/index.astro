@@ -24,15 +24,6 @@ const backlinkCount = backlinkSources.reduce((acc, s) => acc + s.mentions.length
 const connectionCount = local.nodes.length - 1;
 ---
 <Base title={`${ROOT_LABEL[type]} — OTS Demonstration`}>
-  <div class="lg:hidden mb-6 space-y-3">
-    <MobileAccordion label="Properties">
-      <CardCatalog type={type} data={data} showAll={true} chromeless={true} />
-    </MobileAccordion>
-    <MobileAccordion label="Backlinks" count={backlinkCount}>
-      <Backlinks targetId={entry.id} chromeless={true} />
-    </MobileAccordion>
-  </div>
-
   <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
     <aside class="lg:col-span-3 lg:order-1 hidden lg:block">
       <div class="lg:sticky lg:top-6">
@@ -53,6 +44,14 @@ const connectionCount = local.nodes.length - 1;
         <span class="inline-block w-3 h-3 rounded-full mr-3 align-middle" style={`background:var(--color-ots-${type})`}></span>
         {ROOT_LABEL[type]}
       </h1>
+      <div class="lg:hidden mb-6 space-y-3">
+        <MobileAccordion label="Properties">
+          <CardCatalog type={type} data={data} showAll={true} chromeless={true} />
+        </MobileAccordion>
+        <MobileAccordion label="Backlinks" count={backlinkCount}>
+          <Backlinks targetId={entry.id} chromeless={true} />
+        </MobileAccordion>
+      </div>
       <div class="prose-body">
         <Content />
       </div>
