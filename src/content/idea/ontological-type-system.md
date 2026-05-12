@@ -2,7 +2,7 @@
 type: "[[Idea]]"
 subtype: "[[Instrument]]"
 title: "Ontological Type System"
-aliases: ["OTS", "the system"]
+aliases: ["OTS"]
 state: Stable
 created: 2026-05-08
 associations: ["[[knowledge-management]]", "[[obsidian]]"]
