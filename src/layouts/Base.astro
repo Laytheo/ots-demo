@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import { ROOT_TYPES, ROOT_LABEL, type RootType } from "../lib/ots";
 import ThemeToggle from "../components/ThemeToggle.astro";
+import Analytics from "@vercel/analytics/astro";
 
 interface Props {
   title?: string;
@@ -80,5 +81,6 @@ const activeType: RootType | null = ROOT_TYPES.includes(firstSegment as RootType
         <a href="https://github.com/Laytheo/ots-demo" class="hover:text-ink">GitHub</a>
       </div>
     </footer>
+    <Analytics />
   </body>
 </html>
