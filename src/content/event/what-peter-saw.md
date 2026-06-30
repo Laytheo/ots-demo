@@ -11,7 +11,7 @@ state: Stable
 created: 2026-05-10
 ---
 
-Imagine this is a note you took at a sermon, while listening to a podcast, or anywhere else you encounter scripture. If you use the [[Capturing Scripture]] method, this is what your notes might look like. What follows is one fictional example.
+Imagine this is a note you took at a sermon, while listening to a podcast, or anywhere else you encounter scripture. If you use the [Capturing Scripture](https://laytheo.com/instruments/capturing-scripture) method, this is what your notes might look like. What follows is one fictional example.
 
 Easter morning sermon, the first in a three-part series on Luke 24 ("The Witness of Easter") preached at [[Grace Reformed Church]] by [[Daniel Renner]]. The series follows the chapter through three of its quieter scenes: Peter at the empty tomb, the disciples on the road to Emmaus, and the upper room where the risen Christ opens the scriptures. This first sermon stays with Peter.
 
