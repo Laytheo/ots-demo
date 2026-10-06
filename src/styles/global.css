@@ -367,9 +367,9 @@ a { color: inherit; text-decoration: none; }
   padding-bottom: 0.55rem;
   margin-bottom: 0.7rem;
 }
-.backlinks .bl-count { color: var(--color-ink-faded); }
+.backlinks .bl-count { color: var(--color-ink-muted); }
 .backlinks .bl-empty {
-  color: var(--color-ink-faded);
+  color: var(--color-ink-muted);
   font-style: italic;
   font-size: 0.85rem;
   padding: 0.15rem 0;
@@ -406,7 +406,7 @@ a { color: inherit; text-decoration: none; }
 }
 .backlinks .bl-source-count {
   margin-left: auto;
-  color: var(--color-ink-faded);
+  color: var(--color-ink-muted);
   font-weight: 400;
 }
 .backlinks .bl-mention {
@@ -445,4 +445,63 @@ a { color: inherit; text-decoration: none; }
   border: 0;
   border-radius: 0;
   padding: 0;
+}
+
+/* Lists keep the witness link and its first-person lines legible at rest. */
+.prose-body ul, .prose-body ol { margin: 0 0 1.1rem; padding-left: 1.5rem; }
+.prose-body ul { list-style: disc; }
+.prose-body ol { list-style: decimal; }
+.prose-body li { padding-left: 0.2rem; margin: 0.45rem 0; }
+.prose-body li::marker { color: var(--color-ink-muted); }
+.prose-body li > ul, .prose-body li > ol { margin: 0.35rem 0 0.8rem; }
+.prose-body li > ul { list-style: circle; }
+.prose-body li p { margin-bottom: 0.4rem; }
+
+/* One-shot cues decorate the complete page, using theme tokens throughout. */
+[data-cue-count] { font-variant-numeric: tabular-nums; }
+.cue-pending { opacity: 0.15; transform: translateY(6px); }
+.cue-arrive { animation: cue-arrival 350ms ease-out both; }
+.cue-wash {
+  background-image: linear-gradient(color-mix(in oklab, var(--color-ots-event) 38%, transparent), color-mix(in oklab, var(--color-ots-event) 38%, transparent));
+  background-repeat: no-repeat;
+  animation: cue-honey 1300ms ease-out both;
+}
+[data-cue-from] .cue-wash { animation-duration: 1500ms; }
+.cue-line { animation: cue-first-person 700ms ease-out both; }
+.cue-summary { animation: cue-summary-pulse 600ms ease-out; }
+.cue-shimmer {
+  background-image: linear-gradient(100deg, transparent 35%, color-mix(in oklab, var(--color-ots-event) 45%, transparent) 50%, transparent 65%);
+  background-size: 300% 100%;
+  background-repeat: no-repeat;
+  animation: cue-shimmer 1400ms ease-in-out 2;
+}
+.cue-caption {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+  margin: 0.2rem 0.4rem;
+}
+.cue-replay {
+  color: var(--color-ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  min-height: 44px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.cue-replay:focus-visible { outline: 2px solid var(--color-ots-event); outline-offset: 3px; }
+@keyframes cue-arrival { from { opacity: 0.15; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes cue-honey { 0% { background-size: 0% 100%; } 31% { background-size: 100% 100%; } 100% { background-size: 100% 0%; } }
+@keyframes cue-first-person {
+  0%, 100% { box-shadow: none; background-color: transparent; }
+  50% { box-shadow: -2px 0 var(--color-ots-event); background-color: color-mix(in oklab, var(--color-ots-event) 9%, transparent); }
+}
+@keyframes cue-summary-pulse { 50% { box-shadow: inset 0 0 0 1px var(--color-ots-event); } }
+@keyframes cue-shimmer { from { background-position: 100% 0; } to { background-position: 0% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .cue-pending { opacity: 1; transform: none; }
+  .cue-arrive, .cue-wash, .cue-line, .cue-summary, .cue-shimmer { animation: none; transition: none; }
 }

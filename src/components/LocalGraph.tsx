@@ -5,11 +5,12 @@ import { useThemeColors } from "../lib/useThemeColors";
 
 interface Props {
   graph: Graph;
+  settled?: boolean;
   rootId?: string;
   height?: number;
 }
 
-export default function LocalGraph({ graph, rootId, height = 280 }: Props) {
+export default function LocalGraph({ graph, rootId, height = 280, settled = false }: Props) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const fgRef = useRef<ForceGraphMethods<GraphNode> | undefined>(undefined);
   const [width, setWidth] = useState<number>(320);
@@ -43,7 +44,8 @@ export default function LocalGraph({ graph, rootId, height = 280 }: Props) {
         nodeLabel={(n: any) => `${n.title} · ${n.type}`}
         linkColor={() => colors.link}
         linkWidth={1}
-        cooldownTicks={80}
+        cooldownTicks={settled ? 0 : 80}
+        {...(settled ? { warmupTicks: 80 } : {})}
         d3VelocityDecay={0.3}
         onNodeClick={(n: any) => {
           if (n.href) window.location.assign(n.href);
