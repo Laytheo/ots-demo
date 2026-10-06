@@ -48,9 +48,6 @@ const connectionCount = local.nodes.length - 1;
         <MobileAccordion label="Properties">
           <CardCatalog type={type} data={data} showAll={true} chromeless={true} />
         </MobileAccordion>
-        <MobileAccordion label="Backlinks" count={backlinkCount}>
-          <Backlinks targetId={entry.id} chromeless={true} />
-        </MobileAccordion>
       </div>
       <div class="prose-body">
         <Content />
@@ -64,7 +61,10 @@ const connectionCount = local.nodes.length - 1;
     </aside>
   </section>
 
-  <div class="lg:hidden mt-6">
+  <div class="lg:hidden mt-6 space-y-3">
+    <MobileAccordion label="Linked mentions" count={backlinkCount} open={backlinkCount > 0}>
+      <Backlinks targetId={entry.id} chromeless={true} />
+    </MobileAccordion>
     <MobileAccordion label="Local graph" count={connectionCount} open={true}>
       <LocalGraph client:only="react" graph={local} rootId={entry.id} height={260} />
     </MobileAccordion>

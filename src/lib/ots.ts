@@ -242,7 +242,55 @@ export interface BacklinkSource {
   mentions: BacklinkMention[];
 }
 
-const EXCERPT_RADIUS = 110;
+// Keep nested witness lines with their parent bullet; prose stops at a paragraph.
+function excerptBlocks(body: string): { start: number; end: number; list: boolean }[] {
+  const blocks: { start: number; end: number; list: boolean }[] = [];
+  let block: { start: number; end: number; list: boolean } | null = null;
+  let listIndent = 0;
+  let offset = 0;
+  for (const line of body.split("\n")) {
+    const bullet = line.match(/^(\s*)(?:[-+*]|\d+[.)])\s+/);
+    const indent = line.match(/^\s*/)![0].length;
+    const blank = !line.trim();
+    if (block && ((!block.list && (blank || bullet)) ||
+      (block.list && !blank && (indent <= listIndent)))) {
+      blocks.push(block);
+      block = null;
+    }
+    if (!blank) {
+      if (!block) {
+        block = { start: offset, end: offset + line.length, list: !!bullet };
+        listIndent = bullet ? bullet[1].length : 0;
+      } else {
+        block.end = offset + line.length;
+      }
+    }
+    offset += line.length + 1;
+  }
+  if (block) blocks.push(block);
+  return blocks;
+}
+
+function excerptText(s: string): string {
+  return stripIncidentalLinks(s)
+    .replace(/^[ \t]*(?:[-+*]|\d+[.)])[ \t]+/gm, "")
+    .replace(/\s+/g, " ");
+}
+
+// Long prose retains the linked phrase and ends at sentence or word boundaries.
+function capParagraphContext(s: string, before: boolean, maxLen = 300): string {
+  if (s.length <= maxLen) return s;
+  if (before) {
+    const tail = s.slice(-maxLen);
+    const sentence = tail.search(/[.!?]\s+/);
+    const start = sentence >= 0 ? sentence + 1 : tail.search(/\s/);
+    return "…" + tail.slice(start >= 0 ? start : 0);
+  }
+  const head = s.slice(0, maxLen);
+  const sentences = [...head.matchAll(/[.!?](?=\s|$)/g)];
+  const end = sentences.length ? sentences[sentences.length - 1].index! + 1 : head.lastIndexOf(" ");
+  return head.slice(0, end > 0 ? end : maxLen) + "…";
+}
 
 let _backlinksCache: Promise<Map<string, BacklinkSource[]>> | null = null;
 export function getBacklinks(): Promise<Map<string, BacklinkSource[]>> {
@@ -343,6 +391,7 @@ export async function buildBacklinks(): Promise<Map<string, BacklinkSource[]>> {
 
     // Body links with excerpts
     if (body) {
+      const blocks = excerptBlocks(body);
       const re = /\[\[([^\]]+)\]\]/g;
       let m: RegExpExecArray | null;
       while ((m = re.exec(body)) !== null) {
@@ -352,20 +401,13 @@ export async function buildBacklinks(): Promise<Map<string, BacklinkSource[]>> {
         if (!target || target.id === source.id) continue;
         const start = m.index;
         const end = m.index + raw.length;
-        const beforeStart = Math.max(0, start - EXCERPT_RADIUS);
-        const afterEnd = Math.min(body.length, end + EXCERPT_RADIUS);
-        let before = body.slice(beforeStart, start);
-        let after = body.slice(end, afterEnd);
-        if (beforeStart > 0) {
-          const sp = before.search(/\s/);
-          if (sp > -1) before = "…" + before.slice(sp);
+        const block = blocks.find((b) => b.start <= start && b.end >= end)!;
+        let before = excerptText(body.slice(block.start, start));
+        let after = excerptText(body.slice(end, block.end));
+        if (!block.list) {
+          before = capParagraphContext(before, true);
+          after = capParagraphContext(after, false);
         }
-        if (afterEnd < body.length) {
-          const sp = after.lastIndexOf(" ");
-          if (sp > -1) after = after.slice(0, sp) + "…";
-        }
-        before = stripIncidentalLinks(before).replace(/\s+/g, " ");
-        after = stripIncidentalLinks(after).replace(/\s+/g, " ");
         const aliasMatch = raw.match(/^\s*\[\[([^\]|]+)\|([^\]]+)\]\]\s*$/);
         const label = aliasMatch ? aliasMatch[2].trim() : inner;
         add(target.id, source, { kind: "body", before, after, raw, label });

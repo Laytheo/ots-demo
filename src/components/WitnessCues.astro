@@ -1,0 +1,11 @@
+---
+import { getIndex } from "../lib/ots";
+// The client build emits this entry separately so unflagged pages load no cue script.
+const cueUrl = import.meta.env.DEV ? "/src/lib/witness-cues.ts" : "/_astro/witness-cues.js";
+
+const { entries } = await getIndex();
+const flagged = entries.filter((entry) => entry.data.demo === "witness").map((entry) => entry.href);
+if (flagged.includes("/journal/2026-05-08")) flagged.push("/");
+---
+<script type="application/json" is:inline id="witness-notes" set:html={JSON.stringify(flagged).replace(/</g, "\\u003c")} />
+<script type="module" is:inline src={cueUrl}></script>

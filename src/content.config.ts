@@ -5,6 +5,7 @@ const wikilink = z.string();
 const wikilinks = z.array(wikilink);
 
 const baseFields = {
+  demo: z.string().optional(),
   type: wikilink,
   subtype: wikilink.optional(),
   state: z.enum(["Seed", "Developing", "Stable"]),

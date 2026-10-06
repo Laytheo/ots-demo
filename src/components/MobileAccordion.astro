@@ -1,25 +1,26 @@
 ---
 interface Props {
   label: string;
+  witness?: boolean;
   count?: number | string;
   open?: boolean;
   class?: string;
 }
 
-const { label, count, open = false, class: extraClass = "" } = Astro.props;
+const { witness = false, label, count, open = false, class: extraClass = "" } = Astro.props;
 ---
-<details class:list={["mobile-accordion lg:hidden bg-parchment-50 border border-parchment-300 rounded-sm overflow-hidden", extraClass]} open={open}>
+<details class:list={["mobile-accordion lg:hidden bg-parchment-50 border border-parchment-300 rounded-sm overflow-hidden", extraClass]} open={open} data-cue-mobile={witness ? "" : undefined}>
   <summary class="flex items-center justify-between px-4 py-3 cursor-pointer font-mono uppercase text-[0.7rem] tracking-[0.18em] text-ink-muted hover:text-ink select-none">
     <span class="flex items-center gap-2">
       <span>{label}</span>
       {count !== undefined && (
         <>
           <span class="text-ink-faded">·</span>
-          <span class="text-ink">{count}</span>
+          <span class="text-ink" data-cue-count={witness ? "" : undefined}>{count}</span>
         </>
       )}
     </span>
-    <span class="accordion-chevron text-ink-faded">▸</span>
+    <span class="accordion-chevron text-ink-faded" aria-hidden="true">▸</span>
   </summary>
   <div class="border-t border-parchment-300/60 px-4 py-3">
     <slot />
