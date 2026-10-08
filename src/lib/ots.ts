@@ -299,16 +299,18 @@ export function getBacklinks(): Promise<Map<string, BacklinkSource[]>> {
 }
 
 function stripIncidentalLinks(s: string): string {
-  return s.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, t, a) => a || t);
+  return s
+    .replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, t, a) => a || t)
+    // Excerpts are plain text inside a source-note link, so keep link labels only.
+    .replace(/\[([^\]]+)\]\((?:[^()]|\([^()]*\))*\)/g, "$1");
 }
 
 function bodyPreview(body: string, maxLen = 100): string {
   if (!body) return "";
-  let s = body
+  let s = stripIncidentalLinks(body)
     .replace(/^>\s*\[![^\]]*\][+-]?\s*[^\n]*/gm, "")
     .replace(/^>\s*/gm, "")
     .replace(/^#+\s+/gm, "")
-    .replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, t, a) => a || t)
     .replace(/==([^=]+)==/g, "$1")
     .replace(/[*_`]/g, "")
     .replace(/\s+/g, " ")

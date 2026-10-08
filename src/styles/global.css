@@ -411,6 +411,7 @@ a { color: inherit; text-decoration: none; }
 }
 .backlinks .bl-mention {
   display: block;
+  overflow-wrap: anywhere;
   background: color-mix(in oklab, var(--color-ots-event) 6%, transparent);
   border-left: 2px solid color-mix(in oklab, var(--color-ots-event) 32%, transparent);
   padding: 0.45rem 0.65rem;
